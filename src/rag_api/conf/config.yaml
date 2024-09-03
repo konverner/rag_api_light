@@ -1,8 +1,16 @@
-app:
-  hello_message: "Hello, World!"
+retriever:
+  model_name: "DeepPavlov/rubert-base-cased-sentence"
+llm:
+  model_name: "accounts/fireworks/models/llama-v3-70b-instruct"
+  prompt_template: "Твоя задача ответить на ВОПРОС опираясь на ДОКУМЕНТ. Отвечай на языке, на котором был задан вопрос.
+  Процитируй название документа. ВОПРОС: {query} Название ДОКУМЕНТА:
+  {document_name} Содержание ДОКУМЕНТа: {document_text}"
+text_splitter:
+  chunk_size: 800
+  chunk_overlap: 80
 api:
   version: "0.1.0"
-  title: "service_rest_api_template"
+  title: "rag_api"
   description: "Template for REST API service"
   host: "0.0.0.0"
   port: 8000

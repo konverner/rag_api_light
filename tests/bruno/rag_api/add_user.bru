@@ -1,0 +1,17 @@
+meta {
+  name: add_user
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}/add_user
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "konverner"
+  }
+}

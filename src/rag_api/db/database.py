@@ -11,7 +11,7 @@ from .models import Base
 
 # Load logging configuration with OmegaConf
 logging_config = OmegaConf.to_container(
-    OmegaConf.load("./src/service_rest_api_template/conf/logging_config.yaml"),
+    OmegaConf.load("./src/rag_api/conf/logging_config.yaml"),
     resolve=True
 )
 logging.config.dictConfig(logging_config)
@@ -32,11 +32,11 @@ if not all([DB_HOST, DB_NAME, DB_USER, DB_PASSWORD]):
 
 # Construct the database URL
 DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}?sslmode=require"
-
+DATABASE_URL = "postgresql://avnadmin:AVNS_kqdyHi-ZmNH_JklK_AT@pg-e456ba1-konst-3f58.k.aivencloud.com:15442/rag?sslmode=require"
 def get_enginge():
     return create_engine(
         DATABASE_URL,
-        connect_args={'connect_timeout': 5},
+        connect_args={'connect_timeout': 5, "application_name": "api_rag"},
         poolclass=NullPool
     )
 

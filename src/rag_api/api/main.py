@@ -3,19 +3,18 @@ import logging
 import uvicorn
 from fastapi import FastAPI
 from omegaconf import OmegaConf
-from service_rest_api_template.api.endpoints import endpoint1, endpoint2
-from service_rest_api_template.db.database import create_tables
-
+from rag_api.api.endpoints import documents, llm, users
+from rag_api.db.database import create_tables
 
 # Load logging configuration with OmegaConf
 logging_config = OmegaConf.to_container(
-    OmegaConf.load("./src/service_rest_api_template/conf/logging_config.yaml"),
+    OmegaConf.load("./src/rag_api/conf/logging_config.yaml"),
     resolve=True
 )
 logging.config.dictConfig(logging_config)
 logger = logging.getLogger(__name__)
 
-def create_app(config_path: str = "src/service_rest_api_template/conf/config.yaml") -> FastAPI:
+def create_app(config_path: str = "src/rag_api/conf/config.yaml") -> FastAPI:
     """
     Create a FastAPI application with the specified configuration.
     Args:
@@ -28,14 +27,15 @@ def create_app(config_path: str = "src/service_rest_api_template/conf/config.yam
 
     app = FastAPI(title=config.api.title, description=config.api.description, version=config.api.version)
 
-    app.include_router(endpoint1.router)
-    app.include_router(endpoint2.router)
+    app.include_router(documents.router)
+    app.include_router(users.router)
+    app.include_router(llm.router)
 
     return app
 
 
 if __name__ == "__main__":
-    config_path = "src/service_rest_api_template/conf/config.yaml"
+    config_path = "src/rag_api/conf/config.yaml"
     config = OmegaConf.load(config_path)
     create_tables()
     app = create_app(config_path)

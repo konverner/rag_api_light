@@ -1,14 +1,13 @@
 import logging
-from datetime import datetime
+from http.client import HTTPException
+from io import BytesIO
 
-from fastapi import APIRouter
-from rag_api.db.crud import add_client
-from rag_api.core.app import App
+from fastapi import APIRouter, File, UploadFile
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from omegaconf import OmegaConf
-
-from src.rag_api.api.schemas import Endpoint1Response, Endpoint1Request
-from src.rag_api.db.crud import read_client
-
+from rag_api.core.file_parser import FileParser
+from rag_api.core.vector_store import VectorStore
+from rag_api.utils.exceptions import UnsupportedFileTypeException
 
 # Load logging configuration with OmegaConf
 logging_config = OmegaConf.to_container(
@@ -18,16 +17,22 @@ logging_config = OmegaConf.to_container(
 logging.config.dictConfig(logging_config)
 logger = logging.getLogger(__name__)
 
+cfg = OmegaConf.load("src/rag_api/conf/config.yaml")
+
+file_parser = FileParser(max_file_size_mb=10, allowed_file_types={"txt", "doc", "docx", "pdf"})
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=200, chunk_overlap=10)
+vector_store = VectorStore(embedding_model_name=cfg.retriever.model_name)
+
 router = APIRouter()
 
 
-@router.post("/upload-document/")
+@router.post("/upload_document")
 async def load_document(
     file: UploadFile = File(...),
     username: str = "default_user"  # you can pass the username as a query parameter or from a dependency
 ):
     logger.info(
-        f"[load_document] Received document: {file.filename} with type {file.content_type} from user {username}"
+        f"Received document: {file.filename} with type {file.content_type} from user `{username}`"
     )
     try:
         uploaded_file = UploadFile(
@@ -51,28 +56,11 @@ async def load_document(
         raise HTTPException(status_code=400, detail="Please upload a valid text file (txt, doc, docx, pdf).")
 
 
-@router.get("/get-docs/")
+@router.post("/get_documents", operation_id="GET-DOCUMENTS")
 async def get_docs(username: str):
-    logger.info(f"[get_docs] Request to list documents for user {username}")
+    logger.info(f"Request to list documents for user `{username}`")
     documents = vector_store.get_document_names(username)
     if not documents:
         return {"message": "You have no uploaded documents."}
     else:
         return {"documents": documents}
-
-
-@router.post("/ask-question/")
-async def ask_question(question: str, username: str):
-    logger.info(f"[ask_question] Received question: '{question}' from user {username}")
-    retriever_results = vector_store.query(question, 1, username)
-    if not retriever_results["documents"]:
-        raise HTTPException(status_code=404, detail="No relevant documents found.")
-    
-    document_text = retriever_results["documents"][0]
-    document_name = retriever_results["metadatas"][0]
-    response = llm.run(question, document_text, document_name)
-    
-    log_message(username, question)  # Log the question
-    add_user(username)  # Assuming you have the user data
-    
-    return {"response": response}

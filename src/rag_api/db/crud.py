@@ -1,37 +1,42 @@
 from datetime import datetime
 
-from service_rest_api_template.db.models import Message, Client
+from rag_api.db.database import get_session
+from rag_api.db.models import DbMessage, DbUser
 from sqlalchemy.orm import Session
-from service_rest_api_template.db.database import get_session
 
 
-def add_client(name: str) -> Client:
+def add_user(name: str) -> DbUser:
     db: Session = get_session()
-    db_client = Client(name=name)
-    db.add(db_client)
+    db_user = DbUser(name=name)
+    db.add(db_user)
     db.commit()
-    db.refresh(db_client)
+    db.refresh(db_user)
     db.close()
-    return db_client
+    return db_user
 
-def read_client(client_id: int) -> Client:
+def read_user(name: str) -> DbUser:
     db: Session = get_session()
-    result = db.query(Client).filter(Client.id == client_id).first()
+    result = db.query(DbUser).filter(DbUser.name == name).first()
     db.close()
     return result
 
-def create_client(name: str) -> Client:
+def delete_user(name: str) -> None:
     db: Session = get_session()
-    db_client = Client(name=name)
-    db.add(db_client)
-    db.commit()
-    db.refresh(db_client)
+    user = db.query(DbUser).filter(DbUser.name == name).first()
+    if user:
+        db.delete(user)
+        db.commit()
     db.close()
-    return db_client
 
-def create_message(client_id: int, content: str, timestamp: datetime) -> Message:
+def get_all_users() -> list[DbUser]:
     db: Session = get_session()
-    db_message = Message(client_id=client_id, content=content, timestamp=timestamp)
+    users = db.query(DbUser).all()
+    db.close()
+    return users
+
+def create_message(user_id: int, content: str, timestamp: datetime) -> DbMessage:
+    db: Session = get_session()
+    db_message = DbMessage(user_id=user_id, content=content, timestamp=timestamp)
     db.add(db_message)
     db.commit()
     db.refresh(db_message)

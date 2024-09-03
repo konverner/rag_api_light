@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel
 
@@ -9,12 +10,12 @@ class Message(BaseModel):
     timestemp: datetime
 
 class User(BaseModel):
-    id: int
+    id: Optional[int]
     name: str
 
 class Document(BaseModel):
     id: int
-    name: str,
+    name: str
     content: str
 
 class UploadFileRequest(BaseModel):
@@ -25,4 +26,12 @@ class GetDocsRequest(BaseModel):
     user: User
 
 class GetDocsResponse(BaseModel):
-    documents = list[Document]
+    documents: list[Document]
+
+class QueryRequest(BaseModel):
+    user: User
+    query: str
+
+class QueryResponse(BaseModel):
+    response: str
+    source: Document

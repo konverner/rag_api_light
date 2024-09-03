@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]  # project’s basic metadata, such as the dependencies, your name, etc.
 name = "rag_api"
 version = "0.0.0"  #
-description = "Template for REST API service based on FastAPI"
+description = "Template for REST API rag service based on FastAPI"
 readme = "README.md"
 authors = [
     {name = "Konstantin Verner"},
@@ -27,6 +27,13 @@ dependencies = [
     "sqlalchemy==1.4.25", # SQL toolkit and Object-Relational Mapping
     "psycopg2-binary", # PostgreSQL adapter
     "python-dotenv",    # .env file support
+    "python-dotenv",
+    "transformers[torch]",
+    "langchain_text_splitters",
+    "fireworks-ai",
+    "chromadb==0.5.5",
+    "python-docx==1.1.2",
+    "PyPDF2==3.0.0"
 ]
 
 [project.optional-dependencies]
