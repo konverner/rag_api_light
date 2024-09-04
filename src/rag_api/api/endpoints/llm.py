@@ -1,12 +1,12 @@
 import logging
 from http.client import HTTPException
+from hydra.utils import instantiate
 
 from fastapi import APIRouter
 from omegaconf import OmegaConf
 from rag_api.api.schemas import QueryRequest, QueryResponse
-from rag_api.core.llm import FireworksLLM
-from rag_api.core.vector_store import VectorStore
 from rag_api.db import crud
+
 
 # Load logging configuration with OmegaConf
 logging_config = OmegaConf.to_container(
@@ -19,8 +19,8 @@ logger = logging.getLogger(__name__)
 cfg = OmegaConf.load("src/rag_api/conf/config.yaml")
 
 router = APIRouter()
-llm = FireworksLLM(model_name=cfg.llm.model_name, prompt_template=cfg.llm.prompt_template)
-vector_store = VectorStore(embedding_model_name=cfg.retriever.model_name)
+llm = instantiate(cfg.vector_store)
+vector_store = instantiate(cfg.vector_store)
 
 @router.post("/query/", operation_id="QUERY")
 async def query(request: QueryRequest) -> QueryResponse:

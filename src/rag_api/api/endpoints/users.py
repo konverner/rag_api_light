@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-@router.post("/add_user/", operation_id="ADD-USER")
+@router.post("/add_user", operation_id="ADD-USER")
 async def add_user(user: User):
     db_user = crud.add_user(user.name)
     if db_user:
@@ -32,10 +32,7 @@ async def delete_user(username: str):
     else:
         raise HTTPException(status_code=404, detail="User not found.")
 
-@router.get("/get_users/", operation_id="GET-USERS")
+@router.get("/get_users", operation_id="GET-USERS")
 async def get_users():
     users = crud.get_all_users()
-    if users:
-        return {"users": users}
-    else:
-        raise HTTPException(status_code=404, detail="No users found.")
+    return {"users": users}

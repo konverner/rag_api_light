@@ -27,7 +27,8 @@ dependencies = [
     "sqlalchemy==1.4.25", # SQL toolkit and Object-Relational Mapping
     "psycopg2-binary", # PostgreSQL adapter
     "python-dotenv",    # .env file support
-    "python-dotenv",
+    "python-multipart",
+    "hydra-core",
     "transformers[torch]",
     "langchain_text_splitters",
     "fireworks-ai",

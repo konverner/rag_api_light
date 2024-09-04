@@ -1,13 +1,24 @@
-retriever:
-  model_name: "DeepPavlov/rubert-base-cased-sentence"
+vector_store:
+  _target_: "rag_api.core.vector_store.VectorStore"
+  embedding_model_name: "DeepPavlov/rubert-base-cased-sentence"
 llm:
+  _target_: "rag_api.core.llm.FireworksLLM"
   model_name: "accounts/fireworks/models/llama-v3-70b-instruct"
   prompt_template: "Твоя задача ответить на ВОПРОС опираясь на ДОКУМЕНТ. Отвечай на языке, на котором был задан вопрос.
   Процитируй название документа. ВОПРОС: {query} Название ДОКУМЕНТА:
   {document_name} Содержание ДОКУМЕНТа: {document_text}"
 text_splitter:
+  _target_: "langchain_text_splitters.RecursiveCharacterTextSplitter"
   chunk_size: 800
   chunk_overlap: 80
+file_parser:
+  _target_: "rag_api.core.file_parser.FileParser"
+  max_file_size_mb: 10
+  allowed_file_types:
+    - "txt"
+    - "doc"
+    - "docx"
+    - "pdf"
 api:
   version: "0.1.0"
   title: "rag_api"

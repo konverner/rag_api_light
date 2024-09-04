@@ -12,11 +12,7 @@ logging_config = OmegaConf.to_container(
     OmegaConf.load("./src/rag_api/conf/logging_config.yaml"),
     resolve=True
 )
-
-# Apply the logging configuration
 logging.config.dictConfig(logging_config)
-
-# Configure logging
 logger = logging.getLogger(__name__)
 
 class FireworksLLM:

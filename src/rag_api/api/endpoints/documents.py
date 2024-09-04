@@ -3,10 +3,8 @@ from http.client import HTTPException
 from io import BytesIO
 
 from fastapi import APIRouter, File, UploadFile
-from langchain_text_splitters import RecursiveCharacterTextSplitter
 from omegaconf import OmegaConf
-from rag_api.core.file_parser import FileParser
-from rag_api.core.vector_store import VectorStore
+from hydra.utils import instantiate
 from rag_api.utils.exceptions import UnsupportedFileTypeException
 
 # Load logging configuration with OmegaConf
@@ -19,17 +17,17 @@ logger = logging.getLogger(__name__)
 
 cfg = OmegaConf.load("src/rag_api/conf/config.yaml")
 
-file_parser = FileParser(max_file_size_mb=10, allowed_file_types={"txt", "doc", "docx", "pdf"})
-text_splitter = RecursiveCharacterTextSplitter(chunk_size=200, chunk_overlap=10)
-vector_store = VectorStore(embedding_model_name=cfg.retriever.model_name)
+file_parser = instantiate(cfg.file_parser)
+text_splitter = instantiate(cfg.text_splitter)
+vector_store = instantiate(cfg.vector_store)
 
 router = APIRouter()
 
 
-@router.post("/upload_document")
+@router.post("/upload_document", operation_id="UPLOAD-DOCUMENT")
 async def load_document(
-    file: UploadFile = File(...),
-    username: str = "default_user"  # you can pass the username as a query parameter or from a dependency
+    username: str,
+    file: UploadFile = File(...)
 ):
     logger.info(
         f"Received document: {file.filename} with type {file.content_type} from user `{username}`"
