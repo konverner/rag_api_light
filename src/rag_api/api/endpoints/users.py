@@ -1,9 +1,12 @@
 import logging
 
+import sqlalchemy
 from fastapi import APIRouter, HTTPException
 from omegaconf import OmegaConf
 from rag_api.api.schemas import User
 from rag_api.db import crud
+from rag_api.utils.exceptions import UserExistsException, UserDoesNotExist
+
 
 # Load logging configuration with OmegaConf
 logging_config = OmegaConf.to_container(
@@ -17,20 +20,23 @@ router = APIRouter()
 
 @router.post("/add_user", operation_id="ADD-USER")
 async def add_user(user: User):
-    db_user = crud.add_user(user.name)
-    if db_user:
-        return {"message": "User created successfully.", "user": db_user}
-    else:
-        raise HTTPException(status_code=400, detail="User creation failed.")
+    try:
+        crud.add_user(user.name)
+    except Exception as e:
+        if isinstance(e, sqlalchemy.exc.IntegrityError):
+            logger.error(f"Error adding user: {e}")
+            raise UserExistsException(user.name)
+
 
 @router.post("/delete_user", operation_id="DELETE-USER")
 async def delete_user(username: str):
     db_user = crud.read_user(username)
     if db_user:
         crud.delete_user(username)
-        return {"message": "User deleted successfully."}
+        return {"message": f"User `{username}` deleted successfully."}
     else:
-        raise HTTPException(status_code=404, detail="User not found.")
+        raise UserDoesNotExist
+
 
 @router.get("/get_users", operation_id="GET-USERS")
 async def get_users():

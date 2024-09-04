@@ -23,15 +23,15 @@ class UploadFileRequest(BaseModel):
     content: str
 
 class GetDocsRequest(BaseModel):
-    user: User
+    username: str
 
 class GetDocsResponse(BaseModel):
     documents: list[Document]
 
 class QueryRequest(BaseModel):
-    user: User
+    username: str
     query: str
 
 class QueryResponse(BaseModel):
     response: str
-    source: Document
+    source: str
