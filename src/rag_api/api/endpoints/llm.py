@@ -4,7 +4,7 @@ from hydra.utils import instantiate
 
 from fastapi import APIRouter
 from omegaconf import OmegaConf
-from rag_api.api.schemas import QueryRequest, QueryResponse, Document
+from rag_api.api.schemas import QueryRequest, QueryResponse
 from rag_api.utils.exceptions import UserDoesNotExist
 from rag_api.db import crud
 
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 cfg = OmegaConf.load("src/rag_api/conf/config.yaml")
 
 router = APIRouter()
-llm = instantiate(cfg.llm)
+llm = instantiate(cfg.openai_llm)
 vector_store = instantiate(cfg.vector_store)
 
 @router.post("/query", operation_id="QUERY")
@@ -43,6 +43,6 @@ async def query(request: QueryRequest) -> QueryResponse:
     document_text = retriever_results["documents"][0]
     document_name = retriever_results["metadatas"][0][0]["name"]
 
-    response = llm.run(query, document_text, document_name)
+    response = llm.invoke(query, document_text, document_name)
 
     return QueryResponse(response=response, source=document_name)

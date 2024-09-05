@@ -27,7 +27,7 @@ class FireworksLLM:
         fireworks.client.api_key = API_KEY
         self.prompt_template = prompt_template
 
-    def run(self, query: str, document_text: list[str], document_name: list[str]):
+    def invoke(self, query: str, document_text: list[str], document_name: list[str]):
         """Run the LLM model with the given query and document."""
         completion = self.client.ChatCompletion.create(
             model=self.model_name,

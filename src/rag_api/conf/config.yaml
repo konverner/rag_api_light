@@ -1,9 +1,15 @@
 vector_store:
   _target_: "rag_api.core.vector_store.VectorStore"
   embedding_model_name: "DeepPavlov/rubert-base-cased-sentence"
-llm:
-  _target_: "rag_api.core.llm.FireworksLLM"
+fireworksai_llm:
+  _target_: "rag_api.core.fireworksai.FireworksLLM"
   model_name: "accounts/fireworks/models/llama-v3-70b-instruct"
+  prompt_template: "Твоя задача ответить на ВОПРОС опираясь на ДОКУМЕНТ. Отвечай на языке, на котором был задан вопрос.
+  Процитируй название документа. ВОПРОС: {query} Название ДОКУМЕНТА:
+  {document_name} Содержание ДОКУМЕНТа: {document_text}"
+openai_llm:
+  _target_: "rag_api.core.openai.OpenAI"
+  model_name: "gpt-4o-mini"
   prompt_template: "Твоя задача ответить на ВОПРОС опираясь на ДОКУМЕНТ. Отвечай на языке, на котором был задан вопрос.
   Процитируй название документа. ВОПРОС: {query} Название ДОКУМЕНТА:
   {document_name} Содержание ДОКУМЕНТа: {document_text}"
