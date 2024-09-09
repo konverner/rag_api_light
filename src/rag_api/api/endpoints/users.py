@@ -8,7 +8,6 @@ from rag_api.db import crud
 from rag_api.utils.exceptions import UserExistsException, UserDoesNotExist
 
 
-# Load logging configuration with OmegaConf
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
