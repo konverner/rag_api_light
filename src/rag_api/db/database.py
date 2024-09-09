@@ -10,11 +10,6 @@ from sqlalchemy.pool import NullPool
 from .models import Base
 
 # Load logging configuration with OmegaConf
-logging_config = OmegaConf.to_container(
-    OmegaConf.load("./src/rag_api/conf/logging_config.yaml"),
-    resolve=True
-)
-logging.config.dictConfig(logging_config)
 logger = logging.getLogger(__name__)
 
 load_dotenv(find_dotenv(usecwd=True))
@@ -33,12 +28,11 @@ if not all([DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD]):
 
 # Construct the database URL
 DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?sslmode=require"
-print(DATABASE_URL)
 
 def get_enginge():
     return create_engine(
         DATABASE_URL,
-        connect_args={'connect_timeout': 5, "application_name": "api_rag"},
+        connect_args={'connect_timeout': 5, "application_name": "rag_api"},
         poolclass=NullPool
     )
 

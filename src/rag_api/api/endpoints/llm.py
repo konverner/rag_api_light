@@ -9,12 +9,6 @@ from rag_api.utils.exceptions import UserDoesNotExist
 from rag_api.db import crud
 
 
-# Load logging configuration with OmegaConf
-logging_config = OmegaConf.to_container(
-    OmegaConf.load("src/rag_api/conf/logging_config.yaml"),
-    resolve=True
-)
-logging.config.dictConfig(logging_config)
 logger = logging.getLogger(__name__)
 
 cfg = OmegaConf.load("src/rag_api/conf/config.yaml")
@@ -23,7 +17,7 @@ router = APIRouter()
 llm = instantiate(cfg.openai_llm)
 vector_store = instantiate(cfg.vector_store)
 
-@router.post("/query", operation_id="QUERY")
+@router.post("/query")
 async def query(request: QueryRequest) -> QueryResponse:
 
     username = request.username

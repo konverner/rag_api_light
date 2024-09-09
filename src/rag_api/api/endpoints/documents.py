@@ -8,12 +8,6 @@ from hydra.utils import instantiate
 from rag_api.utils.exceptions import UnsupportedFileTypeException
 
 
-# Load logging configuration with OmegaConf
-logging_config = OmegaConf.to_container(
-    OmegaConf.load("src/rag_api/conf/logging_config.yaml"),
-    resolve=True
-)
-logging.config.dictConfig(logging_config)
 logger = logging.getLogger(__name__)
 
 cfg = OmegaConf.load("src/rag_api/conf/config.yaml")
@@ -25,7 +19,7 @@ vector_store = instantiate(cfg.vector_store)
 router = APIRouter()
 
 
-@router.post("/upload_document/{username}", operation_id="UPLOAD-DOCUMENT")
+@router.post("/upload_document/{username}")
 async def upload_document(
     username: str,
     file: UploadFile = File(...)
@@ -55,7 +49,7 @@ async def upload_document(
         raise HTTPException(status_code=400, detail="Please upload a valid text file (txt, doc, docx, pdf).")
 
 
-@router.post("/get_documents/{username}", operation_id="GET-DOCUMENTS")
+@router.post("/get_documents/{username}")
 async def get_docs(username: str):
     logger.info(f"Request to list documents for user `{username}`")
     documents = vector_store.get_document_names(username)

@@ -6,13 +6,9 @@ from omegaconf import OmegaConf
 from rag_api.api.endpoints import documents, llm, users
 from rag_api.db.database import create_tables
 
-# Load logging configuration with OmegaConf
-logging_config = OmegaConf.to_container(
-    OmegaConf.load("./src/rag_api/conf/logging_config.yaml"),
-    resolve=True
-)
-logging.config.dictConfig(logging_config)
+
 logger = logging.getLogger(__name__)
+
 
 def create_app(config_path: str = "src/rag_api/conf/config.yaml") -> FastAPI:
     """
@@ -25,7 +21,11 @@ def create_app(config_path: str = "src/rag_api/conf/config.yaml") -> FastAPI:
     """
     config = OmegaConf.load(config_path)
 
-    app = FastAPI(title=config.api.title, description=config.api.description, version=config.api.version)
+    app = FastAPI(
+        title=config.api.title,
+        description=config.api.description,
+        version=config.api.version
+    )
 
     app.include_router(documents.router)
     app.include_router(users.router)
