@@ -9,6 +9,7 @@ from rag_api.utils.exceptions import UnsupportedFileTypeException
 
 
 logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 cfg = OmegaConf.load("src/rag_api/conf/config.yaml")
 
